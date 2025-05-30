@@ -1,0 +1,239 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>hhg_python.interface &mdash; HHG Python Interface 1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=f2a433a1"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            HHG Python Interface
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <!-- Local TOC -->
+              <div class="local-toc"></div>
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">HHG Python Interface</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">hhg_python.interface</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for hhg_python.interface</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">High-level interface for running HHG simulations.</span>
+
+<span class="sd">This module provides:</span>
+
+<span class="sd">- run_simulation(): invokes the C++ HHG backend.</span>
+<span class="sd">- run_convergence_test(): performs convergence diagnostics.</span>
+<span class="sd">- Automatic loading of shared object libraries (.so) using ctypes.</span>
+<span class="sd">- Optional plot generation from simulation output data.</span>
+
+<span class="sd">Dependencies:</span>
+
+<span class="sd">- Shared object files must be built in the parent directory:</span>
+<span class="sd">  ../libhhg.so and ../libconvergence.so</span>
+<span class="sd">- Plotting utilities are imported from the `plotting` module.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">ctypes</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.plotting</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_time_series_from_file</span><span class="p">,</span> <span class="n">plot_convergence_diagram_from_file</span>
+
+<span class="c1"># Load C++ HHG simulation library</span>
+<span class="n">_lib_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span> <span class="s2">&quot;..&quot;</span><span class="p">,</span> <span class="s2">&quot;libhhg.so&quot;</span><span class="p">)</span>
+<span class="n">hhg_lib</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">CDLL</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">_lib_path</span><span class="p">))</span>
+
+<span class="c1"># Define prototype for singleAtomResponse</span>
+<span class="n">hhg_lib</span><span class="o">.</span><span class="n">requestStop</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">hhg_lib</span><span class="o">.</span><span class="n">requestStop</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="kc">None</span>
+
+<span class="n">hhg_lib</span><span class="o">.</span><span class="n">singleAtomResponse</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">ctypes</span><span class="o">.</span><span class="n">c_double</span><span class="p">,</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_double</span><span class="p">,</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_double</span><span class="p">,</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_double</span><span class="p">,</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_int</span>
+<span class="p">]</span>
+<span class="n">hhg_lib</span><span class="o">.</span><span class="n">singleAtomResponse</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="kc">None</span>
+
+
+<span class="c1"># Load convergence library</span>
+<span class="n">_convergence_lib_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span> <span class="s2">&quot;..&quot;</span><span class="p">,</span> <span class="s2">&quot;libconvergence.so&quot;</span><span class="p">)</span>
+<span class="n">convergence_lib</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">CDLL</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">_convergence_lib_path</span><span class="p">))</span>
+
+<span class="n">convergence_lib</span><span class="o">.</span><span class="n">runConvergence</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_double</span><span class="p">,</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_double</span><span class="p">,</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_double</span><span class="p">,</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_double</span><span class="p">]</span>
+<span class="n">convergence_lib</span><span class="o">.</span><span class="n">runConvergence</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="kc">None</span>
+
+<span class="n">convergence_lib</span><span class="o">.</span><span class="n">requestStop</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">convergence_lib</span><span class="o">.</span><span class="n">requestStop</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="kc">None</span>
+
+
+<div class="viewcode-block" id="run_simulation">
+<a class="viewcode-back" href="../../index.html#hhg_python.interface.run_simulation">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">run_simulation</span><span class="p">(</span><span class="n">wavelength</span><span class="p">,</span> <span class="n">waist</span><span class="p">,</span> <span class="n">intensity</span><span class="p">,</span> <span class="n">pulse_length</span><span class="p">,</span> <span class="n">exponent</span><span class="p">,</span> <span class="n">generate_plots</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Run the HHG simulation for a single atom using the C++ backend.</span>
+
+<span class="sd">    This function calls the `singleAtomResponse` function from `libhhg.so` with</span>
+<span class="sd">    specified parameters. Upon success, optional time and spectrum plots are generated.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        wavelength (float): Laser wavelength in nm.</span>
+<span class="sd">        waist (float): Beam waist (FWHM) in μm.</span>
+<span class="sd">        intensity (float): Peak intensity in 10^14 W/cm².</span>
+<span class="sd">        pulse_length (float): Pulse duration (FWHM) in fs.</span>
+<span class="sd">        exponent (int): Time grid resolution exponent (TSIZE = 2^exponent).</span>
+<span class="sd">        generate_plots (bool): If True, generates D(t) and FFT plots automatically.</span>
+
+<span class="sd">    Side Effects:</span>
+<span class="sd">        - Calls compiled C++ backend for numerical simulation</span>
+<span class="sd">        - Optionally generates and saves plots in the current working directory</span>
+<span class="sd">        - Prints diagnostics to console</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;▶ Running HHG simulation with:&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  wavelength = </span><span class="si">{</span><span class="n">wavelength</span><span class="si">}</span><span class="s2"> nm&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  waist      = </span><span class="si">{</span><span class="n">waist</span><span class="si">}</span><span class="s2"> µm&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  intensity  = </span><span class="si">{</span><span class="n">intensity</span><span class="si">}</span><span class="s2"> x10^14 W/cm²&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  pulse T    = </span><span class="si">{</span><span class="n">pulse_length</span><span class="si">}</span><span class="s2"> fs&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  exponent   = </span><span class="si">{</span><span class="n">exponent</span><span class="si">}</span><span class="s2"> → TSIZE = 2^</span><span class="si">{</span><span class="n">exponent</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Remove old success marker if exists</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s2">&quot;output_success.txt&quot;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">FileNotFoundError</span><span class="p">:</span>
+        <span class="k">pass</span>
+
+    <span class="c1"># Run backend simulation</span>
+    <span class="n">hhg_lib</span><span class="o">.</span><span class="n">singleAtomResponse</span><span class="p">(</span><span class="n">wavelength</span><span class="p">,</span> <span class="n">waist</span><span class="p">,</span> <span class="n">intensity</span><span class="p">,</span> <span class="n">pulse_length</span><span class="p">,</span> <span class="n">exponent</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;✔ C++ simulation finished.&quot;</span><span class="p">)</span>
+    
+    <span class="c1">#with open(&quot;output_success.txt&quot;, &quot;w&quot;) as f:</span>
+    <span class="c1">#    f.write(&quot;ok&quot;)</span>
+
+    <span class="k">if</span> <span class="n">generate_plots</span><span class="p">:</span>
+        <span class="n">plot_time_series_from_file</span><span class="p">(</span><span class="s2">&quot;D&quot;</span><span class="p">,</span> <span class="n">exponent</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="s2">&quot;Dipole moment&quot;</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Dipole moment vs Time&quot;</span><span class="p">)</span>
+        <span class="n">plot_time_series_from_file</span><span class="p">(</span><span class="s2">&quot;FFT&quot;</span><span class="p">,</span> <span class="n">exponent</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="s2">&quot;Spectral intensity&quot;</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Dipole spectrum&quot;</span><span class="p">)</span>
+
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;✔ Simulation complete.&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="run_convergence_test">
+<a class="viewcode-back" href="../../index.html#hhg_python.interface.run_convergence_test">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">run_convergence_test</span><span class="p">(</span><span class="n">wavelength</span><span class="p">,</span> <span class="n">waist</span><span class="p">,</span> <span class="n">intensity</span><span class="p">,</span> <span class="n">pulse_length</span><span class="p">,</span> <span class="n">exponent</span><span class="p">,</span> <span class="n">generate_plots</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Run convergence analysis across different TSIZE values.</span>
+
+<span class="sd">    This function invokes the C++ `runConvergence()` function from `libconvergence.so`</span>
+<span class="sd">    to compute D(t) at various resolutions. It optionally visualizes results.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        wavelength (float): Laser wavelength in nm.</span>
+<span class="sd">        waist (float): Beam waist (FWHM) in μm.</span>
+<span class="sd">        intensity (float): Peak intensity in 10^14 W/cm².</span>
+<span class="sd">        pulse_length (float): Pulse duration in fs.</span>
+<span class="sd">        exponent (int): Used to locate output files for plotting.</span>
+<span class="sd">        generate_plots (bool): If True, generates D(t), FFT and convergence ratio plots.</span>
+
+<span class="sd">    Side Effects:</span>
+<span class="sd">        - Executes convergence tests via C++ backend</span>
+<span class="sd">        - Generates output plots from precomputed data</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s2">&quot;output_success.txt&quot;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">FileNotFoundError</span><span class="p">:</span>
+        <span class="k">pass</span>
+        
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;▶ Running HHG convergence test...&quot;</span><span class="p">)</span>
+    
+    <span class="n">convergence_lib</span><span class="o">.</span><span class="n">runConvergence</span><span class="p">(</span><span class="n">wavelength</span><span class="p">,</span> <span class="n">waist</span><span class="p">,</span> <span class="n">intensity</span><span class="p">,</span> <span class="n">pulse_length</span><span class="p">)</span>
+    
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;✔ C++ convergence test finished.&quot;</span><span class="p">)</span>
+        
+    <span class="c1">#with open(&quot;output_success.txt&quot;, &quot;w&quot;) as f:</span>
+    <span class="c1">#    f.write(&quot;ok&quot;)</span>
+        
+    <span class="k">if</span> <span class="n">generate_plots</span><span class="p">:</span>
+        <span class="n">plot_time_series_from_file</span><span class="p">(</span><span class="s2">&quot;D&quot;</span><span class="p">,</span> <span class="n">exponent</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="s2">&quot;Dipole moment&quot;</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Dipole moment vs Time&quot;</span><span class="p">)</span>
+        <span class="n">plot_time_series_from_file</span><span class="p">(</span><span class="s2">&quot;FFT&quot;</span><span class="p">,</span> <span class="n">exponent</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="s2">&quot;Spectral intensity&quot;</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Dipole spectrum&quot;</span><span class="p">)</span>
+        
+    <span class="n">plot_convergence_diagram_from_file</span><span class="p">(</span><span class="s2">&quot;convergence_ratios&quot;</span><span class="p">,</span> <span class="n">exponent</span><span class="p">)</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Zsuzsanna Balint, Krisztina Joos, Tamas Andras.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
