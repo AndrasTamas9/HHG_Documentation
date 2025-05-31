@@ -44,7 +44,7 @@
                                 <a href="java/" class="nav-link">Java</a>
                             </li>
                             <li class="nav-item">
-                                <a href="python/build/html/" class="nav-link">Python</a>
+                                <a href="python_docs/" class="nav-link">Python</a>
                             </li>
                         </ul>
 
@@ -82,9 +82,17 @@
     <div id="toc-collapse" class="navbar-collapse collapse card bg-body-tertiary">
         <ul class="nav flex-column">
             
-            <li class="nav-item" data-bs-level="1"><a href="#welcome-to-my-project-documentation" class="nav-link">Welcome to My Project Documentation</a>
+            <li class="nav-item" data-bs-level="1"><a href="#welcome-to-our-hhg-project-documentation" class="nav-link">Welcome to Our HHG Project Documentation</a>
               <ul class="nav flex-column">
             <li class="nav-item" data-bs-level="2"><a href="#about-the-project" class="nav-link">About the Project</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#introduction" class="nav-link">Introduction</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#theoretical-background-high-order-harmonic-generation-from-a-single-atom" class="nav-link">Theoretical Background: High-Order Harmonic Generation from a Single Atom</a>
               <ul class="nav flex-column">
               </ul>
             </li>
@@ -95,12 +103,12 @@
 </div></div>
                     <div class="col-md-9" role="main">
 
-<h1 id="welcome-to-my-project-documentation">Welcome to My Project Documentation</h1>
+<h1 id="welcome-to-our-hhg-project-documentation">Welcome to Our HHG Project Documentation</h1>
 <p>This documentation contains components written in multiple languages:</p>
 <ul>
 <li><a href="cpp/html/">C++ Module Documentation</a></li>
 <li><a href="java/">Java GUI Documentation</a></li>
-<li><a href="python/build/html/">Python Backend Documentation</a></li>
+<li><a href="python_docs/">Python Backend Documentation</a></li>
 </ul>
 <h2 id="about-the-project">About the Project</h2>
 <p>This software simulates high-harmonic generation using numerical methods.
@@ -108,7 +116,99 @@ It consists of:
 - a C++ core simulation engine,
 - a Java-based GUI frontend,
 - and a Python integration/management layer.</p>
-<p>Use the sidebar or the links above to navigate.</p></div>
+<h2 id="introduction">Introduction</h2>
+<p>High-Harmonic Generation (HHG) is a nonlinear optical process that occurs when intense, ultrashort laser pulses interact with atoms or molecules, resulting in the emission of coherent radiation at integer multiples of the driving laser frequency. The simulation of HHG phenomena requires highly accurate numerical models capable of resolving both temporal and spatial variations of the electromagnetic field, as well as the nonlinear atomic response. Due to the inherent complexity of the problem, particularly when modeling at the single-atom level with time-dependent quantum dynamics, a computationally efficient and physically robust simulation framework is required.</p>
+<p>The purpose of this project is to develop a modular and user-friendly software platform capable of simulating the nonlinear dipole response of a single atom under a focused laser beam using the Lewenstein model. The system is intended to serve both educational and research purposes, providing intuitive parameter control through a graphical user interface (GUI), while relying on a high-performance C++ backend to carry out the numerically intensive computations. Additionally, the platform should support convergence analysis of the time grid resolution and offer visual feedback in the form of dipole and spectral plots, enabling the user to assess the accuracy and physical validity of the simulation.</p>
+<h2 id="theoretical-background-high-order-harmonic-generation-from-a-single-atom">Theoretical Background: High-Order Harmonic Generation from a Single Atom</h2>
+<p>High-order harmonic generation (HHG) is a nonlinear light–matter interaction process where an atom or molecule, subjected to an intense infrared (IR) laser field, emits radiation at multiples of the fundamental frequency. This section describes the essential physical mechanisms and theoretical models used in the simulation of HHG in noble gases.</p>
+<p>In theoretical treatments of HHG, several approximations are typically made:
+- The driving laser frequency is assumed to be far from any atomic resonance.
+- Relativistic and magnetic field effects are neglected.
+- The dipole approximation is used (wavelength ≫ atomic size).</p>
+<h3 id="classical-model-of-hhg">Classical Model of HHG</h3>
+<p>The classical or three-step model explains HHG as:</p>
+<ol>
+<li><strong>Ionization</strong>: Electron tunnels through the Coulomb barrier due to the strong field.</li>
+<li><strong>Acceleration</strong>: Electron oscillates in the laser field and gains kinetic energy.</li>
+<li><strong>Recombination</strong>: Electron recombines with the parent ion and emits a high-energy photon.</li>
+</ol>
+<figure style="text-align: center;">
+  <img src="img/hhg_scheme.png" alt="Three-step HHG process" style="max-width: 100%;">
+  <figcaption style="font-style: italic; margin-top: 0.5em;">Figure 1: Scheme illustrating the three steps of the HHG process.</figcaption>
+</figure>
+
+<p>The electric field is modeled as:<br />
+\[
+E(t) = E_1 \cos(\omega_1 t + \varphi_0),
+\]</p>
+<p>and the ponderomotive energy is:<br />
+\[
+U_p = \frac{e^2 E_1^2}{4 m_e \omega_1^2}.
+\]</p>
+<p>The cutoff energy is:<br />
+\[
+E_{\mathrm{max}} = I_p + 3.17 U_p.
+\]</p>
+<p>Electron trajectories depend on ionization time. Each half-cycle leads to two trajectories (short and long), which differ in chirp.</p>
+<figure style="text-align: center;">
+  <img src="img/electron_trajectory.png" alt="Three-step HHG process" style="max-width: 100%;">
+  <figcaption style="font-style: italic; margin-top: 0.5em;">Figure 2: Electron trajectories and final kinetic energy from the classical model. Top: trajectories colored by final energy; bottom: ionization (red) and recombination (blue) times.</figcaption>
+</figure>
+
+<h3 id="quantum-mechanical-description-strong-field-approximation-sfa">Quantum Mechanical Description – Strong Field Approximation (SFA)</h3>
+<p>SFA extends the model with quantum effects. The Keldysh parameter
+\[
+\gamma = \sqrt{\frac{I_p}{2 U_p}}
+\]
+characterizes the regime; <span class="arithmatex">\( \gamma &lt; 1 \)</span> indicates tunneling dominance.</p>
+<p>SFA assumptions:
+- Single active electron (SAE)
+- Ground state depletion ignored
+- Continuum electron as Volkov wave</p>
+<p>The time-dependent dipole moment is given by the Lewenstein integral:
+\[
+x(t) = 2\, \mathrm{Re} \left[
+\int_{-\infty}^{t} \mathrm{d}t' \,
+\left(
+\frac{\pi}{\epsilon + i(t - t')/2}
+\right)^{3/2}
+E(t')
+\right] \cdot
+\]</p>
+<p>\[
+\cdot d^* \left[ p_s(t', t) + A(t') \right]
+\cdot d \left[ p_s(t', t) + A(t') \right]
+\times \exp \left( -i S(p_s, t', t) \right)
+\]</p>
+<p>with quasi-classical action:
+\[
+S(p_s, t', t) = \int_{t'}^{t} \left( \frac{[p_s + A(t'')]^2}{2} + I_p \right) dt''
+\]
+and canonical momentum:
+\[
+p_s(t', t) = \frac{1}{t - t'} \int_{t'}^{t} A(t'') dt''
+\]</p>
+<p>For hydrogen-like atoms:
+\[
+d(p) = 2 \left( \frac{1}{\pi 0.8 I_p} \right)^{3/4} \frac{p}{0.8 I_p} \exp\left(-\frac{p^2}{2 \cdot 0.8 I_p}\right).
+\]</p>
+<h3 id="spectral-synthesis-and-attosecond-pulses">Spectral Synthesis and Attosecond Pulses</h3>
+<p>The dipole spectrum is obtained as:
+\[
+\tilde{x}(\omega_q) = \frac{1}{\sqrt{2\pi}} \int_{-\infty}^{\infty} x(t) e^{-i \omega_q t} dt.
+\]</p>
+<p>Attosecond pulses:
+\[
+x_{\text{atto}}(t) = \mathcal{F}^{-1} \left[ \tilde{x}(\omega_q) \cdot W(\omega_q) \right],
+\]
+with <span class="arithmatex">\( W(\omega_q) \)</span> a spectral window selecting plateau/cutoff harmonics.</p>
+<figure style="text-align: center;">
+  <img src="img/lewenstein_fig.png" alt="Three-step HHG process" style="max-width: 100%;">
+  <figcaption style="font-style: italic; margin-top: 0.5em;">Figure 3: Left: Dipole moment and electric field. Middle: Emission spectrum from Lewenstein integral with plateau harmonics selected. Right: Reconstructed attosecond pulse train showing short and long trajectory contributions.</figcaption>
+</figure>
+
+<h3 id="conclusion">Conclusion</h3>
+<p>The classical three-step model offers intuitive insight into HHG, while the Lewenstein model (SFA) provides a more accurate quantum description. Together, they underpin modern HHG simulation techniques used to generate attosecond pulses and explore ultrafast dynamics.</p></div>
             </div>
         </div>
 
@@ -123,6 +223,7 @@ It consists of:
         </script>
         <script src="js/base.js"></script>
         <script src="js/redirect.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
         <script src="search/main.js"></script>
 
         <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
@@ -191,5 +292,5 @@ It consists of:
 
 <!--
 MkDocs version : 1.6.1
-Build Date UTC : 2025-05-30 20:12:28.267894+00:00
+Build Date UTC : 2025-05-31 16:52:43.026133+00:00
 -->

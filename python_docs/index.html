@@ -1,0 +1,247 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HHG Python Interface documentation &mdash; HHG Python Interface 1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=f2a433a1"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="#" class="icon icon-home">
+            HHG Python Interface
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">HHG Python Interface documentation</a><ul>
+<li><a class="reference internal" href="#hhg_python.interface.run_convergence_test"><code class="docutils literal notranslate"><span class="pre">run_convergence_test()</span></code></a></li>
+<li><a class="reference internal" href="#hhg_python.interface.run_simulation"><code class="docutils literal notranslate"><span class="pre">run_simulation()</span></code></a></li>
+<li><a class="reference internal" href="#hhg_python.plotting.cleanup_result_files"><code class="docutils literal notranslate"><span class="pre">cleanup_result_files()</span></code></a></li>
+<li><a class="reference internal" href="#hhg_python.plotting.cleanup_result_images"><code class="docutils literal notranslate"><span class="pre">cleanup_result_images()</span></code></a></li>
+<li><a class="reference internal" href="#hhg_python.plotting.plot_convergence_diagram_from_file"><code class="docutils literal notranslate"><span class="pre">plot_convergence_diagram_from_file()</span></code></a></li>
+<li><a class="reference internal" href="#hhg_python.plotting.plot_time_series_from_file"><code class="docutils literal notranslate"><span class="pre">plot_time_series_from_file()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</div>
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">HHG Python Interface</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="#" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">HHG Python Interface documentation</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="hhg-python-interface-documentation">
+<h1>HHG Python Interface documentation<a class="headerlink" href="#hhg-python-interface-documentation" title="Link to this heading"></a></h1>
+<p>Welcome to the documentation of the HHG Python Interface.
+This interface provides Python bindings to a C++ backend for simulating single-atom high-harmonic generation (HHG) in strong-field physics. It also includes plotting and convergence analysis tools.</p>
+<div class="toctree-wrapper compound">
+</div>
+<p id="module-hhg_python.interface">High-level interface for running HHG simulations.</p>
+<p>This module provides:</p>
+<ul class="simple">
+<li><p>run_simulation(): invokes the C++ HHG backend.</p></li>
+<li><p>run_convergence_test(): performs convergence diagnostics.</p></li>
+<li><p>Automatic loading of shared object libraries (.so) using ctypes.</p></li>
+<li><p>Optional plot generation from simulation output data.</p></li>
+</ul>
+<p>Dependencies:</p>
+<ul class="simple">
+<li><p>Shared object files must be built in the parent directory:
+../libhhg.so and ../libconvergence.so</p></li>
+<li><p>Plotting utilities are imported from the <cite>plotting</cite> module.</p></li>
+</ul>
+<dl class="py function">
+<dt class="sig sig-object py" id="hhg_python.interface.run_convergence_test">
+<span class="sig-prename descclassname"><span class="pre">hhg_python.interface.</span></span><span class="sig-name descname"><span class="pre">run_convergence_test</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">wavelength</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">waist</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">intensity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pulse_length</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exponent</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">generate_plots</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hhg_python/interface.html#run_convergence_test"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hhg_python.interface.run_convergence_test" title="Link to this definition"></a></dt>
+<dd><p>Run convergence analysis across different TSIZE values.</p>
+<p>This function invokes the C++ <cite>runConvergence()</cite> function from <cite>libconvergence.so</cite>
+to compute D(t) at various resolutions. It optionally visualizes results.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>wavelength (float): Laser wavelength in nm.
+waist (float): Beam waist (FWHM) in μm.
+intensity (float): Peak intensity in 10^14 W/cm².
+pulse_length (float): Pulse duration in fs.
+exponent (int): Used to locate output files for plotting.
+generate_plots (bool): If True, generates D(t), FFT and convergence ratio plots.</p>
+</dd>
+<dt>Side Effects:</dt><dd><ul class="simple">
+<li><p>Executes convergence tests via C++ backend</p></li>
+<li><p>Generates output plots from precomputed data</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="hhg_python.interface.run_simulation">
+<span class="sig-prename descclassname"><span class="pre">hhg_python.interface.</span></span><span class="sig-name descname"><span class="pre">run_simulation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">wavelength</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">waist</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">intensity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pulse_length</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exponent</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">generate_plots</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hhg_python/interface.html#run_simulation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hhg_python.interface.run_simulation" title="Link to this definition"></a></dt>
+<dd><p>Run the HHG simulation for a single atom using the C++ backend.</p>
+<p>This function calls the <cite>singleAtomResponse</cite> function from <cite>libhhg.so</cite> with
+specified parameters. Upon success, optional time and spectrum plots are generated.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>wavelength (float): Laser wavelength in nm.
+waist (float): Beam waist (FWHM) in μm.
+intensity (float): Peak intensity in 10^14 W/cm².
+pulse_length (float): Pulse duration (FWHM) in fs.
+exponent (int): Time grid resolution exponent (TSIZE = 2^exponent).
+generate_plots (bool): If True, generates D(t) and FFT plots automatically.</p>
+</dd>
+<dt>Side Effects:</dt><dd><ul class="simple">
+<li><p>Calls compiled C++ backend for numerical simulation</p></li>
+<li><p>Optionally generates and saves plots in the current working directory</p></li>
+<li><p>Prints diagnostics to console</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<p id="module-hhg_python.plotting">Plotting utilities for HHG simulation results.</p>
+<p>This module provides:
+- Line plotting of time-domain (D) or frequency-domain (FFT) output
+- Convergence diagram visualization from tabulated data
+- Cleanup of result plots and text files</p>
+<p>All data files are expected to be in the <cite>../results/</cite> directory relative to this script.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="hhg_python.plotting.cleanup_result_files">
+<span class="sig-prename descclassname"><span class="pre">hhg_python.plotting.</span></span><span class="sig-name descname"><span class="pre">cleanup_result_files</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/hhg_python/plotting.html#cleanup_result_files"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hhg_python.plotting.cleanup_result_files" title="Link to this definition"></a></dt>
+<dd><p>Deletes all .png and .txt files from the results/ directory.</p>
+<p>This is typically used to clean up previous simulation output before
+running a new simulation or when closing the GUI.</p>
+<p>Looks for files matching: results/<em>.png and results/</em>.txt</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="hhg_python.plotting.cleanup_result_images">
+<span class="sig-prename descclassname"><span class="pre">hhg_python.plotting.</span></span><span class="sig-name descname"><span class="pre">cleanup_result_images</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/hhg_python/plotting.html#cleanup_result_images"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hhg_python.plotting.cleanup_result_images" title="Link to this definition"></a></dt>
+<dd><p>Deletes all PNG plot files from the results/ directory.</p>
+<p>This is typically used to clean up previous simulation output before
+running a new simulation or when closing the GUI.</p>
+<p>Looks for files matching: results/<a href="#id1"><span class="problematic" id="id2">*</span></a>.png</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="hhg_python.plotting.plot_convergence_diagram_from_file">
+<span class="sig-prename descclassname"><span class="pre">hhg_python.plotting.</span></span><span class="sig-name descname"><span class="pre">plot_convergence_diagram_from_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_prefix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exponent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_coords</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(0.0,</span> <span class="pre">0.0)</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hhg_python/plotting.html#plot_convergence_diagram_from_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hhg_python.plotting.plot_convergence_diagram_from_file" title="Link to this definition"></a></dt>
+<dd><p>Reads convergence ratio data and plots area_ratio vs. exponent (fine_n).</p>
+<dl class="simple">
+<dt>Expects a whitespace-separated file at:</dt><dd><p>../results/&lt;file_prefix&gt;.txt</p>
+</dd>
+</dl>
+<p>Each line should include: fine_n, coarse_n, r, z, area_ratio</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>file_prefix (str): File name prefix (typically ‘convergence_ratios’)
+exponent (int): Marks the vertical line at this exponent in the plot
+target_coords (tuple): (r, z) position for filtering convergence data</p>
+</dd>
+<dt>Side Effects:</dt><dd><ul class="simple">
+<li><p>Generates convergence_plot.png</p></li>
+<li><p>Displays warning if exponent not present</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="hhg_python.plotting.plot_time_series_from_file">
+<span class="sig-prename descclassname"><span class="pre">hhg_python.plotting.</span></span><span class="sig-name descname"><span class="pre">plot_time_series_from_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_prefix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exponent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_coords</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(0.0,</span> <span class="pre">0.0)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ylabel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Value'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Time</span> <span class="pre">Series'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hhg_python/plotting.html#plot_time_series_from_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hhg_python.plotting.plot_time_series_from_file" title="Link to this definition"></a></dt>
+<dd><p>Loads and plots a 1D time or frequency series from a structured text file.</p>
+<dl class="simple">
+<dt>The file is expected to be located at:</dt><dd><p>../results/&lt;file_prefix&gt;_&lt;exponent&gt;.txt</p>
+</dd>
+<dt>Alternating lines are expected:</dt><dd><ul class="simple">
+<li><p>One line with (r, z) coordinates</p></li>
+<li><p>One line with the corresponding time series values</p></li>
+</ul>
+</dd>
+<dt>Args:</dt><dd><p>file_prefix (str): File name prefix (e.g., ‘D’, ‘FFT’)
+exponent (int): Resolution level (TSIZE = 2^exponent)
+target_coords (tuple): (r, z) coordinates to filter the block
+ylabel (str): Label for the Y-axis
+title (str): Plot title</p>
+</dd>
+<dt>Side Effects:</dt><dd><ul class="simple">
+<li><p>Saves a plot image: ../results/&lt;file_prefix&gt;_plot.png</p></li>
+<li><p>Prints messages or warnings if file or data is not found</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Zsuzsanna Balint, Krisztina Joos, Tamas Andras.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
