@@ -102,6 +102,35 @@
             </li>
               </ul>
             </li>
+            
+            <li class="nav-item" data-bs-level="1"><a href="#user-documentation" class="nav-link">User Documentation</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-bs-level="2"><a href="#installation-and-setup" class="nav-link">Installation and Setup</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#using-the-graphical-interface" class="nav-link">Using the Graphical Interface</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#simulation-output" class="nav-link">Simulation Output</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#understanding-the-results" class="nav-link">Understanding the Results</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#advanced-features-and-termination" class="nav-link">Advanced Features and Termination</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#troubleshooting" class="nav-link">Troubleshooting</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
         </ul>
     </div>
 </div></div>
@@ -279,7 +308,105 @@ Dipole signals from coarser grids are compared to finer ones using the normalize
 </ul>
 <p>Transitions are triggered by user actions or internal events. Failures are handled via a fail-fast strategy—subsequent steps are aborted if any prior stage fails, preventing cascading errors.</p>
 <hr />
-<p>This modular architecture and clear inter-language boundaries ensure robustness, maintainability, and extensibility for both educational and research purposes.</p></div>
+<p>This modular architecture and clear inter-language boundaries ensure robustness, maintainability, and extensibility for both educational and research purposes.</p>
+<h1 id="user-documentation">User Documentation</h1>
+<h2 id="installation-and-setup">Installation and Setup</h2>
+<h3 id="repository-download">Repository Download</h3>
+<p>Download the complete project repository from:</p>
+<pre><code>XZY.com
+</code></pre>
+<p>This includes all necessary source files, scripts, and documentation.</p>
+<h3 id="required-dependencies">Required Dependencies</h3>
+<h4 id="software-requirements">Software requirements:</h4>
+<ul>
+<li>Java Runtime Environment (JRE) and Java Development Kit (JDK)</li>
+<li>Python 3</li>
+<li>C++ compiler with OpenMP support (e.g., <code>g++</code>)</li>
+<li>GNU Scientific Library (GSL)</li>
+</ul>
+<h4 id="python-packages">Python packages:</h4>
+<pre><code class="language-bash">pip install jpype1 matplotlib pandas
+</code></pre>
+<h4 id="system-dependencies-debianubuntu-example">System dependencies (Debian/Ubuntu example):</h4>
+<pre><code class="language-bash">sudo apt install default-jdk libgsl-dev g++
+</code></pre>
+<h3 id="compilation-instructions">Compilation Instructions</h3>
+<p>Run all commands from the <strong>root project directory</strong>, where <code>hhg_pinGUIn.py</code> is located.</p>
+<h4 id="compile-java-gui">Compile Java GUI:</h4>
+<pre><code class="language-bash">javac -d out src/gui/*.java
+jar cf gui.jar -C out .
+</code></pre>
+<h4 id="compile-c-libraries-and-executables">Compile C++ libraries and executables:</h4>
+<pre><code class="language-bash"># Shared libraries used by Python
+g++ -fPIC -shared -o libhhg.so hhg.cpp -lgsl -lgslcblas -lm -fopenmp
+g++ -fPIC -shared -o libconvergence.so convergence.cpp -lgsl -lgslcblas -lm -fopenmp
+
+# Executables for direct CLI use
+g++ -DBUILD_EXECUTABLE -o hhg hhg.cpp -lgsl -lgslcblas -lm -fopenmp
+g++ -DBUILD_EXECUTABLE -o convergence convergence.cpp -lgsl -lgslcblas -lm -fopenmp
+</code></pre>
+<h3 id="running-the-application">Running the Application</h3>
+<p>To launch the GUI:</p>
+<pre><code class="language-bash">python3 hhg_pinGUIn.py
+</code></pre>
+<hr />
+<h2 id="using-the-graphical-interface">Using the Graphical Interface</h2>
+<p>After launch, a Java Swing-based graphical window appears, allowing users to set physical parameters of the laser pulse:</p>
+<ul>
+<li>Wavelength (nm)</li>
+<li>Beam waist (μm)</li>
+<li>Peak intensity (<span class="arithmatex">\(10^{14}\)</span> W/cm²)</li>
+<li>Pulse duration (fs)</li>
+<li>Temporal resolution exponent: <span class="arithmatex">\(TSIZE = 2^n\)</span></li>
+</ul>
+<p>Click <strong>"Run"</strong> to start the simulation.</p>
+<p>Modes:
+- <strong>Standard Mode</strong>: runs a single HHG simulation.
+- <strong>Convergence Mode</strong>: runs simulations at increasing resolutions and computes convergence.</p>
+<hr />
+<h2 id="simulation-output">Simulation Output</h2>
+<p>Results are stored in the <code>results/</code> folder and include:</p>
+<ul>
+<li>Raw data files: <code>E(t)</code>, <code>A(t)</code>, <code>D(t)</code>, and <span class="arithmatex">\(|D(ω)|\)</span></li>
+<li>Plots:</li>
+<li>Dipole moment <span class="arithmatex">\(D(t)\)</span> in time domain</li>
+<li>Spectrum <span class="arithmatex">\(|D(ω)|\)</span> of emitted harmonics</li>
+<li>Convergence plot (in convergence mode)</li>
+</ul>
+<p>Filenames encode the resolution exponent, e.g. <code>D_13.txt</code>.</p>
+<hr />
+<h2 id="understanding-the-results">Understanding the Results</h2>
+<ul>
+<li>The <span class="arithmatex">\(D(t)\)</span> plot shows electron dynamics.</li>
+<li>The <span class="arithmatex">\(|D(ω)|\)</span> plot reveals the harmonic spectrum, plateau, and cutoff.</li>
+<li>The convergence plot shows the area error between resolutions on a log scale.</li>
+</ul>
+<p>Important modeling note:</p>
+<ul>
+<li>The underlying model (Lewenstein integral / SFA) is only valid in the <strong>tunneling regime</strong> (<span class="arithmatex">\(\gamma &lt; 1\)</span>).</li>
+<li>Unphysical or invalid results may arise for:</li>
+<li>Extremely short wavelengths</li>
+<li>Very low intensities</li>
+<li>Always ensure input parameters lie within the model's domain of validity.</li>
+</ul>
+<hr />
+<h2 id="advanced-features-and-termination">Advanced Features and Termination</h2>
+<ul>
+<li>A <strong>Stop</strong> button allows graceful simulation termination.</li>
+<li>Parameter sets can be <strong>saved/loaded</strong>.</li>
+<li>Optional sound feedback is available on simulation start.</li>
+</ul>
+<p>The backend handles interrupts safely and prevents data corruption.</p>
+<hr />
+<h2 id="troubleshooting">Troubleshooting</h2>
+<p>If simulation output is missing:</p>
+<ul>
+<li>Check Python and Java console output.</li>
+<li>Possible causes:</li>
+<li>Missing or mislinked shared libraries</li>
+<li>Invalid input values (e.g., zero intensity)</li>
+<li>Output files not generated → try cleaning and re-running</li>
+</ul></div>
             </div>
         </div>
 
@@ -363,5 +490,5 @@ Dipole signals from coarser grids are compared to finer ones using the normalize
 
 <!--
 MkDocs version : 1.6.1
-Build Date UTC : 2025-06-01 08:51:44.833309+00:00
+Build Date UTC : 2025-06-01 15:46:42.906735+00:00
 -->
