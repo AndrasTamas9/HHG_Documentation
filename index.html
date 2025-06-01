@@ -96,6 +96,10 @@
               <ul class="nav flex-column">
               </ul>
             </li>
+            <li class="nav-item" data-bs-level="2"><a href="#software-architecture-and-simulation-pipeline" class="nav-link">Software Architecture and Simulation Pipeline</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
               </ul>
             </li>
         </ul>
@@ -229,7 +233,53 @@ x_{\text{atto}}(t) = \mathcal{F}^{-1} \left[ \tilde{x}(\omega_q) \cdot W(\omega_
 </figure>
 
 <h3 id="conclusion">Conclusion</h3>
-<p>The combination of the classical three-step model and the quantum-mechanical Lewenstein integral provides a robust theoretical foundation for simulating HHG. While the classical model offers intuitive understanding of trajectory physics and cutoff energy, the SFA framework allows for accurate spectral modeling and attosecond pulse synthesis. Together, these models form the backbone of modern HHG simulation software.</p></div>
+<p>The combination of the classical three-step model and the quantum-mechanical Lewenstein integral provides a robust theoretical foundation for simulating HHG. While the classical model offers intuitive understanding of trajectory physics and cutoff energy, the SFA framework allows for accurate spectral modeling and attosecond pulse synthesis. Together, these models form the backbone of modern HHG simulation software.</p>
+<h2 id="software-architecture-and-simulation-pipeline">Software Architecture and Simulation Pipeline</h2>
+<p>The simulation software is built on a modular, three-layered architecture, where each component fulfills a distinct role:</p>
+<ul>
+<li><strong>Java (Presentation Layer)</strong>: Implements the graphical user interface (GUI) using Swing. Users input physical parameters and trigger simulations. Communication to Python is established via the JPype bridge.</li>
+<li><strong>Python (Orchestration Layer)</strong>: Manages control flow, processes user input, handles simulation logic, and invokes C++ routines. It also visualizes results using matplotlib.</li>
+<li><strong>C++ (Computational Backend)</strong>: Contains the numerical engine that evaluates the Lewenstein integral, generates the electric field <span class="arithmatex">\( E(t) \)</span>, vector potential <span class="arithmatex">\( A(t) \)</span>, and computes the dipole response <span class="arithmatex">\( D(t) \)</span> and its spectrum.</li>
+</ul>
+<figure style="text-align: center;">
+  <img src="img/layered_architecture.png" alt="Layered software architecture" style="max-width: 100%;">
+  <figcaption style="font-style: italic; margin-top: 0.5em;">Figure 4: Layered architecture of the HHG simulation software.</figcaption>
+</figure>
+
+<h3 id="simulation-workflow">Simulation Workflow</h3>
+<ol>
+<li>The user launches a simulation from the GUI by entering parameters (e.g., laser wavelength, intensity, pulse duration, resolution exponent).</li>
+<li>The parameters are passed to Python via JPype. Python validates input, clears old outputs, and loads the appropriate shared library (e.g., <code>libhhg.so</code>).</li>
+<li>C++ performs the core computations: spatial-temporal field construction, Lewenstein integral evaluation, and Fourier transform.</li>
+<li>Output data (e.g., <span class="arithmatex">\( E(t) \)</span>, <span class="arithmatex">\( A(t) \)</span>, <span class="arithmatex">\( D(t) \)</span>, <span class="arithmatex">\( |D(\omega)| \)</span>) are saved to text files in the <code>results/</code> directory.</li>
+<li>Python generates plots and optionally runs convergence tests.</li>
+<li>Results are displayed or saved for further analysis.</li>
+</ol>
+<h3 id="convergence-testing">Convergence Testing</h3>
+<p>The system supports resolution testing by varying the number of time steps:
+\[
+\texttt{TSIZE} = 2^n
+\]
+Dipole signals from coarser grids are compared to finer ones using the normalized <span class="arithmatex">\( L_1 \)</span> error:
+\[
+\text{area_ratio} = \frac{\int |D_{\text{fine}} - D_{\text{coarse}}| dt}{\int |D_{\text{fine}}| dt}
+\]</p>
+<figure style="text-align: center;">
+  <img src="img/convergence_test.png" alt="Convergence test" style="max-width: 100%;">
+  <figcaption style="font-style: italic; margin-top: 0.5em;">Figure 5: Error ratios across resolutions to verify temporal convergence.</figcaption>
+</figure>
+
+<h3 id="state-management-and-error-handling">State Management and Error Handling</h3>
+<p>The system operates as a finite state machine with four states:</p>
+<ul>
+<li><strong>Idle</strong>: Waiting for input  </li>
+<li><strong>Running</strong>: Simulation in progress  </li>
+<li><strong>Stopped</strong>: User-interrupted  </li>
+<li><strong>Completed</strong>: Successful finish  </li>
+</ul>
+<p>Transitions are triggered by user actions or internal events. Failures are handled via a fail-fast strategy—subsequent steps are aborted if any prior stage fails, preventing cascading errors.</p>
+<hr />
+<p>This modular architecture and clear inter-language boundaries ensure robustness, maintainability, and extensibility for both educational and research purposes.</p></div>
             </div>
         </div>
 
@@ -313,5 +363,5 @@ x_{\text{atto}}(t) = \mathcal{F}^{-1} \left[ \tilde{x}(\omega_q) \cdot W(\omega_
 
 <!--
 MkDocs version : 1.6.1
-Build Date UTC : 2025-06-01 08:35:56.163640+00:00
+Build Date UTC : 2025-06-01 08:44:14.782589+00:00
 -->
