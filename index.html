@@ -121,94 +121,115 @@ It consists of:
 <p>The purpose of this project is to develop a modular and user-friendly software platform capable of simulating the nonlinear dipole response of a single atom under a focused laser beam using the Lewenstein model. The system is intended to serve both educational and research purposes, providing intuitive parameter control through a graphical user interface (GUI), while relying on a high-performance C++ backend to carry out the numerically intensive computations. Additionally, the platform should support convergence analysis of the time grid resolution and offer visual feedback in the form of dipole and spectral plots, enabling the user to assess the accuracy and physical validity of the simulation.</p>
 <h2 id="theoretical-background-high-order-harmonic-generation-from-a-single-atom">Theoretical Background: High-Order Harmonic Generation from a Single Atom</h2>
 <p>High-order harmonic generation (HHG) is a nonlinear light–matter interaction process where an atom or molecule, subjected to an intense infrared (IR) laser field, emits radiation at multiples of the fundamental frequency. This section describes the essential physical mechanisms and theoretical models used in the simulation of HHG in noble gases.</p>
-<p>In theoretical treatments of HHG, several approximations are typically made:
-- The driving laser frequency is assumed to be far from any atomic resonance.
-- Relativistic and magnetic field effects are neglected.
-- The dipole approximation is used (wavelength ≫ atomic size).</p>
+<p>In theoretical treatments of HHG, several approximations are typically made:</p>
+<ul>
+<li>The driving laser frequency is far from any atomic resonance.</li>
+<li>Relativistic and magnetic effects are neglected.</li>
+<li>The dipole approximation applies (wavelength ≫ atomic size).</li>
+</ul>
 <h3 id="classical-model-of-hhg">Classical Model of HHG</h3>
-<p>The classical or three-step model explains HHG as:</p>
+<p>The classical or three-step model consists of:</p>
 <ol>
-<li><strong>Ionization</strong>: Electron tunnels through the Coulomb barrier due to the strong field.</li>
-<li><strong>Acceleration</strong>: Electron oscillates in the laser field and gains kinetic energy.</li>
-<li><strong>Recombination</strong>: Electron recombines with the parent ion and emits a high-energy photon.</li>
+<li><strong>Ionization</strong>: The electron tunnels through the Coulomb potential barrier.</li>
+<li><strong>Acceleration</strong>: The freed electron oscillates in the laser field.</li>
+<li><strong>Recombination</strong>: The electron returns and recombines with the parent ion, emitting a high-energy photon.</li>
 </ol>
 <figure style="text-align: center;">
   <img src="img/hhg_scheme.png" alt="Three-step HHG process" style="max-width: 100%;">
-  <figcaption style="font-style: italic; margin-top: 0.5em;">Figure 1: Scheme illustrating the three steps of the HHG process.</figcaption>
+  <figcaption style="font-style: italic; margin-top: 0.5em;">Figure 1: Scheme illustrating the three steps of the HHG process. Source: [1]</figcaption>
 </figure>
 
-<p>The electric field is modeled as:<br />
-\[
-E(t) = E_1 \cos(\omega_1 t + \varphi_0),
+<p>The electric field is modeled as:</p>
+<p>\[
+E(t) = E_1 \cos(\omega_1 t + \varphi_0)
 \]</p>
-<p>and the ponderomotive energy is:<br />
-\[
-U_p = \frac{e^2 E_1^2}{4 m_e \omega_1^2}.
+<p>The ponderomotive energy is:</p>
+<p>\[
+U_p = \frac{e^2 E_1^2}{4 m_e \omega_1^2}
 \]</p>
-<p>The cutoff energy is:<br />
-\[
-E_{\mathrm{max}} = I_p + 3.17 U_p.
+<p>The maximum photon energy at recombination (cutoff energy) is:</p>
+<p>\[
+E_{\mathrm{max}} = I_p + 3.17 U_p
 \]</p>
-<p>Electron trajectories depend on ionization time. Each half-cycle leads to two trajectories (short and long), which differ in chirp.</p>
+<p>Each half-cycle of the laser allows for two possible electron trajectories — one short and one long — which contribute differently to the phase and chirp of the emitted radiation.</p>
 <figure style="text-align: center;">
-  <img src="img/electron_trajectory.png" alt="Three-step HHG process" style="max-width: 100%;">
-  <figcaption style="font-style: italic; margin-top: 0.5em;">Figure 2: Electron trajectories and final kinetic energy from the classical model. Top: trajectories colored by final energy; bottom: ionization (red) and recombination (blue) times.</figcaption>
+  <img src="img/electron_trajectory.png" alt="Electron trajectories" style="max-width: 100%;">
+  <figcaption style="font-style: italic; margin-top: 0.5em;">Figure 2: Electron trajectories and final kinetic energy. Top: trajectories by energy; bottom: ionization (red) and recombination (blue) times. Source: [1]</figcaption>
 </figure>
 
 <h3 id="quantum-mechanical-description-strong-field-approximation-sfa">Quantum Mechanical Description – Strong Field Approximation (SFA)</h3>
-<p>SFA extends the model with quantum effects. The Keldysh parameter
-\[
-\gamma = \sqrt{\frac{I_p}{2 U_p}}
-\]
-characterizes the regime; <span class="arithmatex">\( \gamma &lt; 1 \)</span> indicates tunneling dominance.</p>
-<p>SFA assumptions:
-- Single active electron (SAE)
-- Ground state depletion ignored
-- Continuum electron as Volkov wave</p>
-<p>The time-dependent dipole moment is given by the Lewenstein integral:
-\[
+<p>While the classical model provides intuitive insight, it fails to capture quantum interference. The Strong Field Approximation (SFA) extends the model and is valid when the Keldysh parameter satisfies:</p>
+<p>\[
+\gamma = \sqrt{\frac{I_p}{2 U_p}} &lt; 1
+\]</p>
+<p>Key assumptions in SFA:</p>
+<ul>
+<li>Single active electron (SAE) approximation</li>
+<li>Continuum electron modeled as a Volkov (free) wave</li>
+</ul>
+<p>The Lewenstein integral describes the time-dependent dipole moment:</p>
+<p>\[
 x(t) = 2\, \mathrm{Re} \left[
 \int_{-\infty}^{t} \mathrm{d}t' \,
 \left(
 \frac{\pi}{\epsilon + i(t - t')/2}
 \right)^{3/2}
-E(t')
-\right] \cdot
+E(t') \,
+d^* \left( p_s(t', t) - A(t) \right)
+d \left( p_s(t', t) - A(t') \right)
+\exp \left( -i S(p_s, t', t) \right)
+\right]
+\cdot \exp \left[ - \int_{-\infty}^{t} w(t')\, dt' \right]
+\]</p>
+<p>The saddle-point momentum and quasiclassical action are:</p>
+<p>\[
+p_s(t', t) = \frac{1}{t - t'} \int_{t'}^t A(t'') dt''
 \]</p>
 <p>\[
-\cdot d^* \left[ p_s(t', t) + A(t') \right]
-\cdot d \left[ p_s(t', t) + A(t') \right]
-\times \exp \left( -i S(p_s, t', t) \right)
+S_s(t', t) = \int_{t'}^{t} \left( \frac{[p_s + A(t'')]^2}{2} + I_p \right) dt''
 \]</p>
-<p>with quasi-classical action:
-\[
-S(p_s, t', t) = \int_{t'}^{t} \left( \frac{[p_s + A(t'')]^2}{2} + I_p \right) dt''
-\]
-and canonical momentum:
-\[
-p_s(t', t) = \frac{1}{t - t'} \int_{t'}^{t} A(t'') dt''
+<p>For hydrogen-like atoms, the dipole matrix element is approximated as:</p>
+<p>\[
+d(p) = i \frac{2^{7/2}(2I_p)^{5/4}}{\pi} \cdot \frac{p}{(p^2 + 2 I_p)^3}
 \]</p>
-<p>For hydrogen-like atoms:
-\[
-d(p) = 2 \left( \frac{1}{\pi 0.8 I_p} \right)^{3/4} \frac{p}{0.8 I_p} \exp\left(-\frac{p^2}{2 \cdot 0.8 I_p}\right).
+<p>The tunnel ionization rate is given by:</p>
+<p>\[
+w(t) = I_p \cdot \frac{2^{2n^<em>}}{n^</em> \Gamma(n^<em>+1)\Gamma(n^</em>)}
+\left(\frac{4 I_p \sqrt{2I_p}}{|E(t)|}\right)^{2n^*-1}
+\exp\left(-\frac{4 I_p}{3 \omega}\right)
 \]</p>
+<p>where <span class="arithmatex">\( n^* = \sqrt{I_{ph} / I_p} \)</span>. For hydrogen, <span class="arithmatex">\( n^* = 1 \)</span>.</p>
+<p>The laser field is defined as:</p>
+<p>\[
+E(r, z, t) = \frac{E_0}{\sqrt{1+\frac{z^2}{z_0^2}}} \exp\left(-\frac{r^2}{w^2} - \frac{t^2}{\tau^2} \right) \cos{(\omega t + \phi)}
+\]</p>
+<p>The Rayleigh length and spatial phase are:</p>
+<p>\[
+z_0 = \frac{\pi w_0^2}{\lambda}, \quad 
+\phi_s = \arctan(z/z_0) - \frac{r^2}{w_0^2} \cdot \frac{z z_0}{z^2 + z_0^2}
+\]</p>
+<p>The number of optical cycles helps set the simulation time window:</p>
+<p>\[
+\text{o.c.} = \frac{\lambda}{c}
+\]</p>
+<p>A typical simulation uses <span class="arithmatex">\( 2^5 \)</span> optical cycles, and <span class="arithmatex">\( 2^8 \)</span> to <span class="arithmatex">\( 2^{15} \)</span> time points in total, determined by the exponent <span class="arithmatex">\( n \)</span> where <span class="arithmatex">\( N = 2^n \)</span>.</p>
 <h3 id="spectral-synthesis-and-attosecond-pulses">Spectral Synthesis and Attosecond Pulses</h3>
-<p>The dipole spectrum is obtained as:
-\[
-\tilde{x}(\omega_q) = \frac{1}{\sqrt{2\pi}} \int_{-\infty}^{\infty} x(t) e^{-i \omega_q t} dt.
+<p>The dipole spectrum is computed by Fourier transform:</p>
+<p>\[
+\tilde{x}(\omega_q) = \frac{1}{\sqrt{2\pi}} \int_{-\infty}^{\infty} x(t) e^{-i \omega_q t} dt
 \]</p>
-<p>Attosecond pulses:
-\[
-x_{\text{atto}}(t) = \mathcal{F}^{-1} \left[ \tilde{x}(\omega_q) \cdot W(\omega_q) \right],
-\]
-with <span class="arithmatex">\( W(\omega_q) \)</span> a spectral window selecting plateau/cutoff harmonics.</p>
+<p>Harmonics are proportional to <span class="arithmatex">\( \omega_q^2 \tilde{x}(\omega_q) \)</span>. Attosecond pulses are constructed by selecting high harmonics and performing inverse Fourier transform:</p>
+<p>\[
+x_{\text{atto}}(t) = \mathcal{F}^{-1} \left[ \tilde{x}(\omega_q) \cdot W(\omega_q) \right]
+\]</p>
+<p>where <span class="arithmatex">\( W(\omega_q) \)</span> is a spectral window that filters out the fundamental and low-order harmonics.</p>
 <figure style="text-align: center;">
-  <img src="img/lewenstein_fig.png" alt="Three-step HHG process" style="max-width: 100%;">
-  <figcaption style="font-style: italic; margin-top: 0.5em;">Figure 3: Left: Dipole moment and electric field. Middle: Emission spectrum from Lewenstein integral with plateau harmonics selected. Right: Reconstructed attosecond pulse train showing short and long trajectory contributions.</figcaption>
+  <img src="img/lewenstein_fig.png" alt="Attosecond pulse reconstruction" style="max-width: 100%;">
+  <figcaption style="font-style: italic; margin-top: 0.5em;">Figure 3: Left: Dipole moment and electric field. Middle: Emission spectrum from Lewenstein integral. Right: Reconstructed attosecond pulse train. Source: [1]</figcaption>
 </figure>
 
 <h3 id="conclusion">Conclusion</h3>
-<p>The classical three-step model offers intuitive insight into HHG, while the Lewenstein model (SFA) provides a more accurate quantum description. Together, they underpin modern HHG simulation techniques used to generate attosecond pulses and explore ultrafast dynamics.</p></div>
+<p>The combination of the classical three-step model and the quantum-mechanical Lewenstein integral provides a robust theoretical foundation for simulating HHG. While the classical model offers intuitive understanding of trajectory physics and cutoff energy, the SFA framework allows for accurate spectral modeling and attosecond pulse synthesis. Together, these models form the backbone of modern HHG simulation software.</p></div>
             </div>
         </div>
 
@@ -292,5 +313,5 @@ with <span class="arithmatex">\( W(\omega_q) \)</span> a spectral window selecti
 
 <!--
 MkDocs version : 1.6.1
-Build Date UTC : 2025-05-31 16:57:12.976957+00:00
+Build Date UTC : 2025-06-01 08:35:56.163640+00:00
 -->
